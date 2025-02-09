@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:projeto_quanto_custa_the/view/login/pagina_login.dart';
+import 'view/homepage/homepage.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 
@@ -15,6 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Quanto Custa THE',
+      theme: ThemeData(
+        useMaterial3: true, // Ativa o Material 3
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue), // Define a cor base como azul
+      ),
       debugShowCheckedModeBanner: false,
       home: AuthPage(),
     );
