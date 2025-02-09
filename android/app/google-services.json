@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "526811594491",
+    "project_id": "quanto-custa-the-c5edd",
+    "storage_bucket": "quanto-custa-the-c5edd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526811594491:android:c77ddee8e7cbafe175fa5e",
+        "android_client_info": {
+          "package_name": "com.example.projeto_quanto_custa_the"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMC3YbFLll7M_ZIEwIGH6zZQ1eHznN-2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
