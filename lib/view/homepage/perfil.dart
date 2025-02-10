@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../login/pagina_login.dart';
 
 class PerfilPage extends StatelessWidget {
+  const PerfilPage({super.key});
+
   Future<void> _logout(BuildContext context) async {
     
     Navigator.pushAndRemoveUntil(

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class CadastrarLocal extends StatefulWidget {
-  CadastrarLocal({super.key});
+  const CadastrarLocal({super.key});
   @override
   CadastrarLocalState createState() => CadastrarLocalState();
 }
@@ -16,50 +16,71 @@ class CadastrarLocalState extends State<CadastrarLocal> {
   final TextEditingController _bairroController = TextEditingController();
   double? latitude;
   double? longitude;
-  String? zonaSelecionada;  
-  bool _useCurrentLocation = false; 
+  String? zonaSelecionada = 'Zona Leste';
+  bool _useCurrentLocation = false;
 
-  List<String> zonas = ['Zona Leste', 'Zona Sudeste', 'Zona Norte', 'Zona Sul', 'Centro'];  // Lista de zonas (pode ser dinâmica se vindo do Firestore)
+  List<String> zonas = ['Zona Leste', 'Zona Sudeste', 'Zona Norte', 'Zona Sul', 'Centro'];
 
-  
   Future<void> _obterLocalizacao() async {
-    LocationPermission permission = await Geolocator.requestPermission();
+    LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Permissão de localização negada.')),
-      );
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.deniedForever) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ative a permissão de localização nas configurações.')),
+        );
+      }
       return;
     }
+
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
-    setState(() {
-      latitude = position.latitude;
-      longitude = position.longitude;
-    });
+    if (mounted) {
+      setState(() {
+        latitude = position.latitude;
+        longitude = position.longitude;
+      });
+    }
   }
 
-  
   Future<void> _salvarNoFirestore() async {
     if (_formKey.currentState!.validate()) {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Erro: Usuário não autenticado!')),
+          );
+        }
+        return;
+      }
+
       try {
         await FirebaseFirestore.instance.collection('estabelecimentos').add({
           'nome': _nomeController.text,
           'categoria': _categoriaController.text,
-          'zona': zonaSelecionada,  
+          'zona': zonaSelecionada,
           'bairro': _bairroController.text,
-          'latitude': latitude,
-          'longitude': longitude,
-          'usuario_id': FirebaseAuth.instance.currentUser?.uid,
+          'latitude': latitude ?? 0.0,
+          'longitude': longitude ?? 0.0,
+          'usuario_id': user.uid,
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cadastro realizado com sucesso!')),
-        );
-        Navigator.pop(context);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Cadastro realizado com sucesso!')),
+          );
+          Navigator.pop(context);
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao cadastrar: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro ao cadastrar: $e')),
+          );
+        }
       }
     }
   }
@@ -84,10 +105,9 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                 decoration: const InputDecoration(labelText: 'Categoria'),
                 validator: (value) => value!.isEmpty ? 'Digite a categoria' : null,
               ),
-              
               DropdownButtonFormField<String>(
                 value: zonaSelecionada,
-                decoration: InputDecoration(labelText: 'Zona'),
+                decoration: const InputDecoration(labelText: 'Zona'),
                 items: zonas.map((zona) {
                   return DropdownMenuItem<String>(
                     value: zona,
@@ -107,8 +127,6 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                 validator: (value) => value!.isEmpty ? 'Digite o bairro' : null,
               ),
               const SizedBox(height: 20),
-
-              
               Row(
                 children: [
                   Checkbox(
@@ -117,7 +135,7 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                       setState(() {
                         _useCurrentLocation = value!;
                         if (_useCurrentLocation) {
-                          _obterLocalizacao(); 
+                          _obterLocalizacao();
                         } else {
                           latitude = null;
                           longitude = null;
@@ -125,13 +143,11 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                       });
                     },
                   ),
-                  Text('Usar minha localização atual'),
+                  const Text('Usar minha localização atual'),
                 ],
               ),
-              
               if (_useCurrentLocation && latitude != null && longitude != null)
                 Text('Latitude: $latitude, Longitude: $longitude'),
-              
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _salvarNoFirestore,

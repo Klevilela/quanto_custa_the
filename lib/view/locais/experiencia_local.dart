@@ -2,23 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';  // Importando o url_launcher
+import 'package:url_launcher/url_launcher.dart';
 
-import 'listar_experiencias_local.dart'; // Importando Google Maps
+import 'listar_experiencias_local.dart';
 
 class ExperienciaPage extends StatefulWidget {
-  final String estabelecimentoId;
-  final String bairroId;
-  final String zonaId;
-  final double? latitude; 
-  final double? longitude; 
+  final String estabelecimentoNome;
+  final String bairroNome;
+  final String zonaNome;
+  final double? latitude;
+  final double? longitude;
+  final String localId;
 
-  ExperienciaPage({
-    required this.estabelecimentoId,
-    required this.bairroId,
-    required this.zonaId,
-    this.latitude, // Adicionando a latitude e longitude
+  const ExperienciaPage({
+    super.key,
+    required this.estabelecimentoNome,
+    required this.bairroNome,
+    required this.zonaNome,
+    this.latitude,
     this.longitude,
+    required this.localId,
   });
 
   @override
@@ -29,17 +32,18 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
   final TextEditingController produtoController = TextEditingController();
   final TextEditingController precoController = TextEditingController();
   final TextEditingController descricaoController = TextEditingController();
-  int avaliacao = 3; // Nota inicial (padrão)
+  int avaliacao = 3;
   late GoogleMapController mapController;
 
-  // Método para adicionar a experiência no Firestore
   Future<void> _adicionarExperiencia() async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro: Usuário não autenticado!')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro: Usuário não autenticado!')),
+        );
+      }
       return;
     }
 
@@ -49,14 +53,13 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
       try {
         await FirebaseFirestore.instance.collection('experiencias').add({
           'usuario': user.displayName ?? 'Anônimo',
-          'user_id': user.uid,
           'produto': produtoController.text,
           'preco': precoController.text,
           'descricao': descricaoController.text,
           'avaliacao': avaliacao,
-          'bairro_id': widget.bairroId,
-          'zona_id': widget.zonaId,
-          'estabelecimento_id': widget.estabelecimentoId,
+          'bairroNome': widget.bairroNome,
+          'zonaNome': widget.zonaNome,
+          'estabelecimento_id': widget.localId,
           'data_hora': Timestamp.now(),
         });
 
@@ -64,47 +67,49 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
         precoController.clear();
         descricaoController.clear();
         setState(() {
-          avaliacao = 3;  
+          avaliacao = 3;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Experiência registrada com sucesso!')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Experiência registrada com sucesso!')),
+          );
 
-        
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) { 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ListarExperienciasLocal(
-                  estabelecimentoId: widget.estabelecimentoId,
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListarExperienciasLocal(
+                    estabelecimentoId: widget.localId,
+                  ),
                 ),
-              ),
-            );
-          }
-        });
+              );
+            }
+          });
+        }
       } catch (e) {
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao adicionar a experiência: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro ao adicionar a experiência: $e')),
+          );
+        }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos!')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Preencha todos os campos!')),
+        );
+      }
     }
   }
 
-  
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
-    
     final LatLng? location = widget.latitude != null && widget.longitude != null
         ? LatLng(widget.latitude!, widget.longitude!)
         : null;
@@ -131,54 +136,23 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
               maxLines: 3,
             ),
             Row(
-              children: [
-                const Text('Avaliação:'),
-                IconButton(
-                  icon: Icon(Icons.star, color: avaliacao >= 1 ? Colors.yellow : Colors.grey),
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.star,
+                    color: avaliacao > index ? Colors.yellow : Colors.grey,
+                  ),
                   onPressed: () {
                     setState(() {
-                      avaliacao = 1;
+                      avaliacao = index + 1;
                     });
                   },
-                ),
-                IconButton(
-                  icon: Icon(Icons.star, color: avaliacao >= 2 ? Colors.yellow : Colors.grey),
-                  onPressed: () {
-                    setState(() {
-                      avaliacao = 2;
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.star, color: avaliacao >= 3 ? Colors.yellow : Colors.grey),
-                  onPressed: () {
-                    setState(() {
-                      avaliacao = 3;
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.star, color: avaliacao >= 4 ? Colors.yellow : Colors.grey),
-                  onPressed: () {
-                    setState(() {
-                      avaliacao = 4;
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.star, color: avaliacao >= 5 ? Colors.yellow : Colors.grey),
-                  onPressed: () {
-                    setState(() {
-                      avaliacao = 5;
-                    });
-                  },
-                ),
-              ],
+                );
+              }),
             ),
             const SizedBox(height: 16),
-           
             if (location != null)
-              Container(
+              SizedBox(
                 height: 200,
                 child: GoogleMap(
                   onMapCreated: _onMapCreated,
@@ -188,7 +162,7 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
                   ),
                   markers: {
                     Marker(
-                      markerId: MarkerId('localizacao_estabelecimento'),
+                      markerId: const MarkerId('localizacao_estabelecimento'),
                       position: location,
                     ),
                   },
@@ -200,13 +174,12 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
               child: const Text('Adicionar Experiência'),
             ),
             const SizedBox(height: 16),
-            
             if (location != null)
               TextButton(
-                onPressed: () {
-                  final googleMapsUrl = 'https://www.google.com/maps?q=${location.latitude},${location.longitude}';
-                  
-                  launchUrl(Uri.parse(googleMapsUrl));
+                onPressed: () async {
+                  final googleMapsUrl =
+                      'https://www.google.com/maps?q=${location.latitude},${location.longitude}';
+                  await launchUrl(Uri.parse(googleMapsUrl));
                 },
                 child: const Text('Ver no Google Maps'),
               ),

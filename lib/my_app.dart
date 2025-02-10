@@ -20,8 +20,8 @@ class _MyAppState extends State<MyApp> {
       routes: <String, WidgetBuilder>{
         '/login': (context) => const LoginPage(),
         '/cadastrar_login': (context) => const RegisterLoginPage(),
-        '/home':(context) => HomePage(),
-        '/cadastrar_local':(context) => CadastrarLocal(),
+        '/home':(context) => const HomePage(),
+        '/cadastrar_local':(context) => const CadastrarLocal(),
       },
     );
   }

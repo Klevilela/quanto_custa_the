@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'cadastrar_local.dart';
-import 'locais.dart'; // Certifique-se de importar a tela ListaLocais
-import 'perfil.dart'; // Importe a tela de perfil
+import 'locais.dart'; 
+import 'perfil.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   HomePageState createState() => HomePageState();
 }
@@ -27,12 +29,12 @@ class HomePageState extends State<HomePage> {
     if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => CadastrarLocal()),
+        MaterialPageRoute(builder: (context) => const CadastrarLocal()),
       );
     } else if (index == 2) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => PerfilPage()),
+        MaterialPageRoute(builder: (context) => const PerfilPage()),
       );
     }
   }

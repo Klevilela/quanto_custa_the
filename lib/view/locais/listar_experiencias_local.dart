@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ListarExperienciasLocal extends StatelessWidget {
   final String estabelecimentoId;
 
-  ListarExperienciasLocal({required this.estabelecimentoId});
+  const ListarExperienciasLocal({super.key, required this.estabelecimentoId});
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +36,15 @@ class ListarExperienciasLocal extends StatelessWidget {
             itemBuilder: (context, index) {
               var experiencia = experiencias[index].data() as Map<String, dynamic>;
 
+              // Verificar se a avaliação existe antes de aplicar a cor
+              double avaliacao = experiencia['avaliacao'] ?? 0.0;
+
               return ListTile(
                 title: Text(experiencia['produto'] ?? 'Produto não informado'),
                 subtitle: Text(experiencia['descricao'] ?? 'Descrição não informada'),
                 trailing: Icon(
                   Icons.star,
-                  color: experiencia['avaliacao'] >= 4 ? Colors.yellow : Colors.grey,
+                  color: avaliacao >= 4 ? Colors.yellow : Colors.grey,
                 ),
               );
             },

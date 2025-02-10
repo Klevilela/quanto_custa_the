@@ -55,7 +55,7 @@ class LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Autenticação - Quanto Custa THE"),
+        title: const Text("Autenticação - Quanto Custa THE"),
         bottom: TabBar(
           controller: _tabController,
           tabs: const <Widget>[
@@ -79,20 +79,20 @@ class LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ),
                 TextField(
                   controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
                 ),
                 TextField(
                   controller: _senhaController,
-                  decoration: InputDecoration(labelText: 'Senha'),
+                  decoration: const InputDecoration(labelText: 'Senha'),
                   obscureText: true,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton(
                         onPressed: _login,
-                        child: Text('Acessar'),
+                        child: const Text('Acessar'),
                       ),
               ],
             ),

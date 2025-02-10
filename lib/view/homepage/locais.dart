@@ -5,7 +5,7 @@ import '../locais/experiencia_local.dart';
 class ListaLocais extends StatelessWidget {
   final String zona;
 
-  const ListaLocais({required this.zona});
+  const ListaLocais({super.key, required this.zona});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class ListaLocais extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('estabelecimentos')
-            .where('zona', isEqualTo: zona) 
+            .where('zona', isEqualTo: zona)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -37,35 +37,39 @@ class ListaLocais extends StatelessWidget {
           return ListView.builder(
             itemCount: locais.length,
             itemBuilder: (context, index) {
-              var local = locais[index].data() as Map<String, dynamic>;
+              var doc = locais[index];
+              var local = doc.data() as Map<String, dynamic>;
+
+              // Obtendo as informações do local
               var nome = local['nome'] ?? 'Sem nome';
               var bairro = local['bairro'] ?? 'Sem bairro';
-
-              
-              print("Estabelecimento ID: ${local['id']}");
-              print("Bairro ID: ${local['bairro_id']}");
-              print("Zona ID: ${local['zona_id']}");
+              var zonaNome = local['zona'] ?? 'Sem zona';
+              var latitude = local['latitude'] ?? 0.0;
+              var longitude = local['longitude'] ?? 0.0;
+              String localId = doc.id; // ID do local no Firestore
 
               return Card(
                 child: ListTile(
                   title: Text(nome),
                   subtitle: Text(bairro),
                   onTap: () {
-                    
-                    if (local['id'] != null && local['bairro_id'] != null && local['zona_id'] != null) {
+                    if (nome != 'Sem nome' && bairro != 'Sem bairro' && zonaNome != 'Sem zona') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ExperienciaPage(
-                            estabelecimentoId: local['id'], 
-                            bairroId: local['bairro_id'],   
-                            zonaId: local['zona_id'],       
+                            estabelecimentoNome: nome,
+                            bairroNome: bairro,
+                            zonaNome: zonaNome,
+                            latitude: latitude,
+                            longitude: longitude,
+                            localId: localId, // Agora o ID é passado corretamente
                           ),
                         ),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Erro: Dados inválidos.')),
+                        const SnackBar(content: Text('Erro: Dados inválidos no Firestore.')),
                       );
                     }
                   },
