@@ -13,7 +13,7 @@ class ListarExperienciasLocal extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('experiencias')
-            .where('estabelecimento_id', isEqualTo: estabelecimentoId) // Certifique-se de que o ID do estabelecimento está correto
+            .where('estabelecimento_id', isEqualTo: estabelecimentoId) 
             .orderBy('data_hora', descending: true)
             .snapshots(),
         builder: (context, snapshot) {

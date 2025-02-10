@@ -16,12 +16,12 @@ class CadastrarLocalState extends State<CadastrarLocal> {
   final TextEditingController _bairroController = TextEditingController();
   double? latitude;
   double? longitude;
-  String? zonaSelecionada;  // Variável para armazenar a zona selecionada
-  bool _useCurrentLocation = false; // Variável para controlar o checkbox
+  String? zonaSelecionada;  
+  bool _useCurrentLocation = false; 
 
   List<String> zonas = ['Zona Leste', 'Zona Sudeste', 'Zona Norte', 'Zona Sul', 'Centro'];  // Lista de zonas (pode ser dinâmica se vindo do Firestore)
 
-  // Função para obter a localização
+  
   Future<void> _obterLocalizacao() async {
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
@@ -39,14 +39,14 @@ class CadastrarLocalState extends State<CadastrarLocal> {
     });
   }
 
-  // Função para salvar no Firestore
+  
   Future<void> _salvarNoFirestore() async {
     if (_formKey.currentState!.validate()) {
       try {
         await FirebaseFirestore.instance.collection('estabelecimentos').add({
           'nome': _nomeController.text,
           'categoria': _categoriaController.text,
-          'zona': zonaSelecionada,  // Usando a zona selecionada
+          'zona': zonaSelecionada,  
           'bairro': _bairroController.text,
           'latitude': latitude,
           'longitude': longitude,
@@ -84,7 +84,7 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                 decoration: const InputDecoration(labelText: 'Categoria'),
                 validator: (value) => value!.isEmpty ? 'Digite a categoria' : null,
               ),
-              // Alterando o campo de zona para DropdownButtonFormField
+              
               DropdownButtonFormField<String>(
                 value: zonaSelecionada,
                 decoration: InputDecoration(labelText: 'Zona'),
@@ -108,7 +108,7 @@ class CadastrarLocalState extends State<CadastrarLocal> {
               ),
               const SizedBox(height: 20),
 
-              // Checkbox para usar localização atual
+              
               Row(
                 children: [
                   Checkbox(
@@ -117,7 +117,7 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                       setState(() {
                         _useCurrentLocation = value!;
                         if (_useCurrentLocation) {
-                          _obterLocalizacao(); // Captura a localização quando marcado
+                          _obterLocalizacao(); 
                         } else {
                           latitude = null;
                           longitude = null;
@@ -128,7 +128,7 @@ class CadastrarLocalState extends State<CadastrarLocal> {
                   Text('Usar minha localização atual'),
                 ],
               ),
-              // Exibe a localização se capturada
+              
               if (_useCurrentLocation && latitude != null && longitude != null)
                 Text('Latitude: $latitude, Longitude: $longitude'),
               

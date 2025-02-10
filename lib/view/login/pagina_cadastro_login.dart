@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../homepage/homepage.dart';
 
-//import 'package:projeto_quanto_custa_the/view/homepage/homepage.dart';
 class RegisterLoginPage extends StatefulWidget {
   const RegisterLoginPage({super.key});
 
@@ -20,10 +19,8 @@ class RegisterLoginPageState extends State<RegisterLoginPage> {
       TextEditingController();
   bool _isLoading = false;
 
-  // Método para registrar o usuário
   Future<void> _registrarUsuario() async {
     if (_formKey.currentState!.validate()) {
-      // Verifica se a senha e a confirmação de senha são iguais
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('As senhas não coincidem.')),
@@ -35,29 +32,22 @@ class RegisterLoginPageState extends State<RegisterLoginPage> {
         _isLoading = true;
       });
       try {
-        // Cria o usuário no Firebase Authentication
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Atualiza o displayName do usuário
         await userCredential.user!
             .updateDisplayName(_nameController.text.trim());
-
-        // Exemplo de sucesso
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cadastro realizado com sucesso!')),
         );
 
-        // Redireciona para outra tela ou realiza alguma ação após o cadastro
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));
       } on FirebaseAuthException catch (e) {
-        // Tratamento de erros de autenticação
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message ?? 'Erro desconhecido!')),
         );
@@ -153,16 +143,3 @@ class RegisterLoginPageState extends State<RegisterLoginPage> {
     );
   }
 }
-
-
-/*
-
-  
-  
-  
-  // Método para registrar o usuário
-  
-
-  
-
-*/

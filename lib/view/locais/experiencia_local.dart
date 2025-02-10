@@ -64,16 +64,16 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
         precoController.clear();
         descricaoController.clear();
         setState(() {
-          avaliacao = 3;  // Resetando a avaliação
+          avaliacao = 3;  
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Experiência registrada com sucesso!')),
         );
 
-        // Usando Future.delayed para garantir que a navegação aconteça após a inserção
+        
         Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) { // Verificar se o widget ainda está montado
+          if (mounted) { 
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -85,7 +85,7 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
           }
         });
       } catch (e) {
-        // Exibe erro em caso de falha na inserção
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao adicionar a experiência: $e')),
         );
@@ -97,14 +97,14 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
     }
   }
 
-  // Função para mover o mapa até a localização do estabelecimento
+  
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Verificando se latitude e longitude são válidas
+    
     final LatLng? location = widget.latitude != null && widget.longitude != null
         ? LatLng(widget.latitude!, widget.longitude!)
         : null;
@@ -176,7 +176,7 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
               ],
             ),
             const SizedBox(height: 16),
-            // Mapa
+           
             if (location != null)
               Container(
                 height: 200,
@@ -200,12 +200,12 @@ class _ExperienciaPageState extends State<ExperienciaPage> {
               child: const Text('Adicionar Experiência'),
             ),
             const SizedBox(height: 16),
-            // Link para o Google Maps
+            
             if (location != null)
               TextButton(
                 onPressed: () {
                   final googleMapsUrl = 'https://www.google.com/maps?q=${location.latitude},${location.longitude}';
-                  // Abre o Google Maps no navegador ou app
+                  
                   launchUrl(Uri.parse(googleMapsUrl));
                 },
                 child: const Text('Ver no Google Maps'),

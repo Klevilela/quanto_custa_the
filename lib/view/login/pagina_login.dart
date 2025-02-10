@@ -10,10 +10,6 @@ class LoginPage extends StatefulWidget {
   LoginPageState createState() => LoginPageState();
 }
 
-//importar o arquivo pagina_cadastro_login.dart ou chamar pela rota(configurada em my_app.dart('/cadastro_login'))
-
-//classe já no formato tabBarViewer(de um lado a tela de login e do outro a tela de cadastro de login)
-
 class LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   late TabController _tabController;
 
@@ -28,25 +24,22 @@ class LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Função para login com email e senha
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
     });
     try {
-      // Realizando login com email e senha
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _senhaController.text,
       );
       print("Login bem-sucedido: ${userCredential.user?.email}");
-      // ignore: use_build_context_synchronously
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomePage()));
     } catch (e) {
-      // ignore: avoid_print
       print("Erro ao fazer login: $e");
-      // ignore: use_build_context_synchronously
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Falha no login: $e')),
       );
@@ -73,11 +66,7 @@ class LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: _tabController,
-        /*construir dentro do children página de login(textfield pra email, senha e o botão de login e o titulo. 
-        E chamar a classe RegisterLoginPage() */
-
         children: [
-          // Tela de Login
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -108,8 +97,7 @@ class LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               ],
             ),
           ),
-          // Tela de Registro
-          const RegisterLoginPage(), // Certifique-se de que esta classe esteja importada ou configurada corretamente
+          const RegisterLoginPage(),
         ],
       ),
     );
