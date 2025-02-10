@@ -1,0 +1,27 @@
+class ZonaSudeste {
+  static const List<String> bairros = [
+    'Itararé I',
+    'Itararé II',
+    'Renascença I',
+    'Renascença II',
+    'Renascença III',
+    'Gurupi',
+    'Beira Rio',
+    'Colorado',
+    'Parque Ideal',
+    'São Raimundo',
+    'Novo Horizonte',
+    'Comprida',
+    'Extrema',
+    'Redonda',
+    'Jardim Europa',
+    'São Sebastião',
+    'Todos os Santos',
+    'Livramento',
+    'Tancredo Neves',
+    'Parque Poti',
+    'Verde Cap',
+    'Flor do Tempo',
+    'Santana',
+  ];
+}
